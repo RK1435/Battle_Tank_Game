@@ -20,12 +20,10 @@ public class TankSpawner : MonoBehaviour
     void Start()
     {
         CreateTank();
-
     }
 
     private void CreateTank()
-    {
-       
+    {      
         TankTypeScriptableObject tankTypeScriptableObject = tankList.TankList[1];
         TankModel tankModel = new TankModel(tankTypeScriptableObject);
         TankController tankController = new TankController(tankModel, tankView);

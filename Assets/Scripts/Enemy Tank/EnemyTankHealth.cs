@@ -11,15 +11,17 @@ public class EnemyTankHealth : MonoBehaviour
     public Color fullHealthColor = Color.green;
     public Color zeroHealthColor = Color.red;
     public GameObject explosionPrefab;
+    public TankType type;
 
+    
     private AudioSource explosionAudio;
     private ParticleSystem explosionParticles;
     private float currentHealth;
     private bool isPlayerDead;
-
     private TankView tankView;
-
-
+    private TankTypeScriptableObject tankTypeScriptableObject;
+    private float enemyTankHealth;
+    private EnemyTankSpawner enemyTankSpawner;
 
     private void Start()
     {
@@ -40,7 +42,7 @@ public class EnemyTankHealth : MonoBehaviour
         isPlayerDead = false;
 
         //setHealthUI();
-        
+        enemyTankHealth = currentHealth;
     }
 
     public void TakeDamage(float amount)
@@ -57,10 +59,13 @@ public class EnemyTankHealth : MonoBehaviour
 
     private void setHealthUI()
     {
-        slider = Slider.FindObjectOfType<Slider>();
+        //slider = Slider.FindObjectOfType<Slider>();
+        slider = GameObject.FindGameObjectWithTag("EnemyHealthSlider").GetComponent<Slider>();
         slider.value = currentHealth;
-        fillImage = Image.FindObjectOfType<Image>();
+        //fillImage = Image.FindObjectOfType<Image>();
+        fillImage = GameObject.FindGameObjectWithTag("EnemyFillAreaFill").GetComponent<Image>();
         fillImage.color = Color.Lerp(a: zeroHealthColor, b: fullHealthColor, t: currentHealth / startingHealth);
+        
     }
 
     private void onDeath()
@@ -80,4 +85,17 @@ public class EnemyTankHealth : MonoBehaviour
     {
         tankView = _tankView;
     }
+
+    public EnemyTankHealth(TankTypeScriptableObject tankTypeScriptableObject)
+    {
+        type = tankTypeScriptableObject.tankType;
+        enemyTankHealth = tankTypeScriptableObject.health;
+       
+    }
+
+    public void SetEnemyTankSpawner(EnemyTankSpawner _enemyTankSpawner)
+    {
+        enemyTankSpawner = _enemyTankSpawner;
+    }
+
 }

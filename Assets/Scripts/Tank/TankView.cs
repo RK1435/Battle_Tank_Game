@@ -26,6 +26,39 @@ public class TankView : MonoBehaviour
     private float originalPitch;
     public float pitchRange = 0.2f;
 
+    //Shooting
+    public int playerNumber = 1;
+    public GameObject shell;
+    public Transform fireTransform;
+    public Slider aimSlider;
+    public AudioSource shootingAudio;
+    public AudioClip chargingClip;
+    public AudioClip fireClip;
+    public float minLaunchForce = 15f;
+    public float maxLaunchForce = 30f;
+    public float maxChargeTime = 0.75f;
+
+    public Joybutton fixedJoybutton;
+
+    //private string fire;
+    public float currentLaunchForce;
+    public float chargeSpeed;
+    public bool fire;
+
+    void OnEnable()
+    {
+        aimSlider = GameObject.FindGameObjectWithTag("PlayerAimSlider").GetComponent<Slider>();
+        aimSlider.transform.SetParent(GameObject.FindGameObjectWithTag("Tank Health Canvas").transform);
+        aimSlider.value = minLaunchForce;
+
+        fireTransform = GameObject.FindGameObjectWithTag("PlayerFireTransform").transform;
+        //shell = GameObject.Find("Shell").GetComponent<Rigidbody>();
+        fixedJoybutton = GameObject.FindGameObjectWithTag("FixedJoybutton").GetComponent<Joybutton>();
+        //fixedJoybutton = Input.GetKey(KeyCode.Joystick1Button0);
+
+        currentLaunchForce = minLaunchForce;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -46,10 +79,16 @@ public class TankView : MonoBehaviour
         
         GameObject healthFill = GameObject.FindGameObjectWithTag("FillAreaFill");
         healthFill.transform.SetParent(healthSlider.transform);
-        
+
+        GameObject fireTransform = GameObject.FindGameObjectWithTag("PlayerFireTransform");
+        fireTransform.transform.SetParent(transform);
 
         //Audio
-        originalPitch = movementAudio.pitch;    
+        originalPitch = movementAudio.pitch;
+
+        //Shooting
+        chargeSpeed = (maxLaunchForce - minLaunchForce) / maxChargeTime;
+
     }
 
     // Update is called once per frame
@@ -57,10 +96,26 @@ public class TankView : MonoBehaviour
     {
         Movement();
         EngineAudio();
+        tankController.Shooting();
+    }
+
+   
+    private void FixedUpdate()
+    { 
+
+        if (movement != 0)
+        {
+            tankController.Move(movement, tankController.GetTankModel().movementSpeed);
+        }
+
+        if (rotation != 0)
+        {
+            tankController.Rotate(rotation, tankController.GetTankModel().rotationSpeed);
+        }
     }
 
     private void Movement()
-    {   
+    {
         //Player Movement
         movement = tvJoystick.Vertical;
         rotation = tvJoystick.Horizontal;
@@ -70,9 +125,9 @@ public class TankView : MonoBehaviour
     private void EngineAudio()
     {
 
-        if (Mathf.Abs(movement) < 0.1f  && Mathf.Abs(rotation) < 0.1f)
+        if (Mathf.Abs(movement) < 0.1f && Mathf.Abs(rotation) < 0.1f)
         {
-            if(movementAudio.clip == engineDriving)
+            if (movementAudio.clip == engineDriving)
             {
                 movementAudio.clip = engineIdling;
                 movementAudio.pitch = Random.Range(originalPitch - pitchRange, originalPitch + pitchRange);
@@ -92,18 +147,17 @@ public class TankView : MonoBehaviour
 
     }
 
-    private void FixedUpdate()
-    { 
+    public void Fire()
+    {
+        fire = true;
 
-        if (movement != 0)
-        {
-            tankController.Move(movement, tankController.GetTankModel().movementSpeed);
-        }
+        GameObject shellInstance = Instantiate(shell, fireTransform.position, fireTransform.rotation);
+        shellInstance.GetComponent<Rigidbody>().velocity = currentLaunchForce * fireTransform.forward;
 
-        if (rotation != 0)
-        {
-            tankController.Rotate(rotation, tankController.GetTankModel().rotationSpeed);
-        }
+        shootingAudio.clip = fireClip;
+        shootingAudio.Play();
+
+        currentLaunchForce = minLaunchForce;
     }
 
 
@@ -121,5 +175,6 @@ public class TankView : MonoBehaviour
     {
         tankHealth = _tankHealth;
     }
+
 
 }

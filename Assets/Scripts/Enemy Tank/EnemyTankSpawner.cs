@@ -6,7 +6,7 @@ using UnityEngine;
 public class EnemyTankSpawner : MonoBehaviour
 {
     public EnemyTankView enemyTankView;
-
+    private EnemyTankHealth enemyTankHealth;
     private EnemyTankController enemyTankController;
 
     public Transform[] SpawnPoints;
@@ -22,7 +22,6 @@ public class EnemyTankSpawner : MonoBehaviour
 
     void Start()
     {
-
         CreateEnemyTank();    
     }
 
@@ -40,10 +39,14 @@ public class EnemyTankSpawner : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             Instantiate(EnemyPrefab, SpawnPoints[i].transform.position, Quaternion.identity);
-            
+
         }
         
     }
 
+    public void SetEnemyTankHealth(EnemyTankHealth _enemyTankHealth)
+    {
+        enemyTankHealth = _enemyTankHealth;
+    }
 
 }
