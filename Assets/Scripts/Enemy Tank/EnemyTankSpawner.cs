@@ -6,14 +6,14 @@ using UnityEngine;
 public class EnemyTankSpawner : MonoBehaviour
 {
     public EnemyTankView enemyTankView;
-
+    private EnemyTankHealth enemyTankHealth;
     private EnemyTankController enemyTankController;
 
     public Transform[] SpawnPoints;
     public GameObject EnemyPrefab;
 
     public TankScriptableObjectList tankList;
-    // Start is called before the first frame update
+    private Vector3 enemySpawnPoint;
 
     public void SetEnemyTankController(EnemyTankController _enemyTankController)
     {
@@ -22,8 +22,7 @@ public class EnemyTankSpawner : MonoBehaviour
 
     void Start()
     {
-
-        CreateEnemyTank();    
+        CreateEnemyTank();
     }
 
     private void OnEnable()
@@ -33,17 +32,22 @@ public class EnemyTankSpawner : MonoBehaviour
 
     private void CreateEnemyTank()
     {
-        TankTypeScriptableObject tankTypeScriptableObject = tankList.TankList[1];
+        TankTypeScriptableObject tankTypeScriptableObject = tankList.TankList[0];
         EnemyTankModel enemyTankModel = new EnemyTankModel(tankTypeScriptableObject);
-        EnemyTankController enemyTankController = new EnemyTankController(enemyTankModel, enemyTankView);
+        EnemyTankController enemyTankController = new EnemyTankController(enemyTankModel, enemyTankView, enemySpawnPoint);
+        enemySpawnPoint = enemyTankView.transform.position;
+        //Instantiate(EnemyPrefab, SpawnPoints[1].transform.position, Quaternion.identity);
+       // for (int i = 0; i < 4; i++)
+        //{
+          //  Instantiate(EnemyPrefab, SpawnPoints[i].transform.position, Quaternion.identity);
 
-        for (int i = 0; i < 4; i++)
-        {
-            Instantiate(EnemyPrefab, SpawnPoints[i].transform.position, Quaternion.identity);
-            
-        }
+        //}
         
     }
 
+    public void SetEnemyTankHealth(EnemyTankHealth _enemyTankHealth)
+    {
+        enemyTankHealth = _enemyTankHealth;
+    }
 
 }

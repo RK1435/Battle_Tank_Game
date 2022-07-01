@@ -5,72 +5,163 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-public class EnemyTankView : MonoBehaviour
+public class EnemyTankView : MonoBehaviour, IDamagable
 {
     public TankType tankType;
     private EnemyTankController enemyTankController;
     private EnemyTankView enemyTankView;
-   
     private EnemyTankModel enemyTankModel;
-
     private float enemyMovement;
+    private float enemyRotate;
+    private EnemyTankSpawner enemyTankSpawner;
+    private float waitTime;
 
-
-
+    [Header("Components")]
     public Rigidbody enemyRB;
-    public Transform moveSpot;
-    public float startWaitTime;
-    public float minX;
-    public float maxX;
-    public float minZ;
-    public float maxZ;
+    public MeshRenderer[] enemyMeshes;
+   
 
+    // Enemy Health
+    public float startingHealth = 35f;
+    public Slider slider;
+    public Image fillImage;
+    public Color fullHealthColor = Color.green;
+    public Color zeroHealthColor = Color.red;
+    public GameObject explosionPrefab;
+    public TankType type;
 
+    private AudioSource explosionAudio;
+    private ParticleSystem explosionParticles;
+    private float currentHealth;
+    private bool isPlayerDead;
+    private TankView tankView;
+    private TankTypeScriptableObject tankTypeScriptableObject;
+    public float enemyTankHealth;
+
+    [Header("Firing")]
+    public Transform firePoint;
+    
     // Start is called before the first frame update
     void Start()
     {
-
+        
         //UI
 
         GameObject enemyHealthCanvas = GameObject.FindGameObjectWithTag("EnemyHealthCanvas");
         enemyHealthCanvas.transform.SetParent(transform);
-        
+        enemyHealthCanvas.transform.position = this.transform.position;
 
         GameObject enemyHealthSlider = GameObject.FindGameObjectWithTag("EnemyHealthSlider");
         enemyHealthSlider.transform.SetParent(enemyHealthCanvas.transform);
-        
+        enemyHealthSlider.transform.position = enemyHealthCanvas.transform.position;
 
         GameObject enemyHealthFill = GameObject.FindGameObjectWithTag("EnemyFillAreaFill");
         enemyHealthFill.transform.SetParent(enemyHealthSlider.transform);
+        enemyHealthFill.transform.position = enemyHealthSlider.transform.position;
 
-        GameObject moveSpot = GameObject.FindGameObjectWithTag("EnemyMoveSpot");
-        //moveSpot.transform.SetParent(transform);
-        //moveSpot = moveSpot.transform;
+        GameObject enemyFireTransform = GameObject.FindGameObjectWithTag("EnemyFireTransform");
+        enemyFireTransform.transform.SetParent(transform);
+        //enemyFireTransform.transform.position = firePoint.transform.position;
+        //firePoint = enemyFireTransform.transform;
+
+        //EnemyTankController enemyTankController = GetComponent<EnemyTankController>();
 
 
+        // Enemy Health
+        setHealthUI();
     }
 
+    private void Awake()
+    {
+        explosionParticles = Instantiate(explosionPrefab).GetComponent<ParticleSystem>();
+        explosionAudio = explosionParticles.GetComponent<AudioSource>();
+        explosionParticles.gameObject.SetActive(false);
+    }
+
+    private void OnEnable()
+    {
+        currentHealth = startingHealth;
+        isPlayerDead = false;
+
+        //setHealthUI();
+        enemyTankHealth = currentHealth;
+
+        firePoint = GameObject.FindGameObjectWithTag("EnemyFireTransform").transform;
+        //firePoint.transform.position = GameObject.FindGameObjectWithTag("EnemyFireTransform").transform.position; ;
+    }
     // Update is called once per frame
     void Update()
     {
-    
-             
+        //EnemyMovement();
+        //EnemyPatrol();
+        enemyTankController.RunEnemyAI();
     }
 
-    /*public void EnemyMovement()
+
+    public void TakeDamage(float amount)
     {
-        enemyMovement = enemyTankController.EnemyPatrol();
-    }*/
+        currentHealth -= amount;
+
+        setHealthUI();
+
+        if (currentHealth <= 0f && !isPlayerDead)
+        {
+            onDeath();
+        }
+    }
+
+    private void setHealthUI()
+    {
+        //slider = Slider.FindObjectOfType<Slider>();
+        slider = GameObject.FindGameObjectWithTag("EnemyHealthSlider").GetComponent<Slider>();
+        slider.value = currentHealth;
+        //fillImage = Image.FindObjectOfType<Image>();
+        fillImage = GameObject.FindGameObjectWithTag("EnemyFillAreaFill").GetComponent<Image>();
+        fillImage.color = Color.Lerp(a: zeroHealthColor, b: fullHealthColor, t: currentHealth / startingHealth);
+
+    }
+
+    private void onDeath()
+    {
+        isPlayerDead = true;
+
+        explosionParticles.transform.position = transform.position;
+        explosionParticles.gameObject.SetActive(true);
+
+        explosionParticles.Play();
+        explosionAudio.Play();
+
+        gameObject.SetActive(false);
+    }
+
+    public EnemyTankView(TankTypeScriptableObject tankTypeScriptableObject)
+    {
+        type = tankTypeScriptableObject.tankType;
+        enemyTankHealth = tankTypeScriptableObject.maxHealth;
+    }
 
     public Rigidbody GetEnemyRigidbody()
     {
         return enemyRB;
     }
 
+
     public void SetEnemyTankController(EnemyTankController _enemyTankController)
     {
         enemyTankController = _enemyTankController;
     }
 
+    public void SetMaterial(Material enemyMaterial)
+    {
+        for(int i = 0; i< enemyMeshes.Length; i++)
+        {
+            enemyMeshes[i].material = enemyMaterial;
+        }
+    }
+
+    public void SetEnemyTankSpawner(EnemyTankSpawner _enemyTankSpawner)
+    {
+        enemyTankSpawner = _enemyTankSpawner;
+    }
   
 }

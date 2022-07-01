@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7971465092225000337}
   - component: {fileID: 7971465092221576131}
   - component: {fileID: 7971465092222574851}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TankTracksLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 7971465092225000339}
   - component: {fileID: 7971465092221576141}
   - component: {fileID: 7971465092222574861}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TankTracksRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -179,8 +179,7 @@ GameObject:
   - component: {fileID: 6663892592117642202}
   - component: {fileID: -4872859404770201024}
   - component: {fileID: -2419876565959953722}
-  - component: {fileID: 8587711391141626198}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player Tank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,6 +306,26 @@ MonoBehaviour:
   engineDriving: {fileID: 8300000, guid: d7ca9fb5aa30155449192b23d7fb3336, type: 3}
   movementAudio: {fileID: -4872859404770201024}
   pitchRange: 0.2
+  playerNumber: 1
+  shell: {fileID: 2014938374618044513, guid: 9859580ad398cd54985046a5edf21a21, type: 3}
+  fireTransform: {fileID: 0}
+  aimSlider: {fileID: 0}
+  shootingAudio: {fileID: -2419876565959953722}
+  chargingClip: {fileID: 8300000, guid: c17f124fcdc0f5446a72f793898bd74b, type: 3}
+  fireClip: {fileID: 8300000, guid: 672a9941361ad494a99fba36759eca80, type: 3}
+  minLaunchForce: 15
+  maxLaunchForce: 30
+  maxChargeTime: 0.075
+  fixedJoybutton: {fileID: 0}
+  currentLaunchForce: 0
+  chargeSpeed: 0
+  fire: 1
+  startingHealth: 100
+  slider: {fileID: 0}
+  fillImage: {fileID: 0}
+  fullHealthColor: {r: 0, g: 1, b: 0, a: 1}
+  zeroHealthColor: {r: 1, g: 0, b: 0, a: 1}
+  explosionPrefab: {fileID: 151086, guid: ee49a9a8678ecf8468eb488e1ac8d42b, type: 3}
 --- !u!82 &-4872859404770201024
 AudioSource:
   m_ObjectHideFlags: 0
@@ -499,24 +518,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &8587711391141626198
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7971465092224581237}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e01253549cae4e643b28bce2aa941809, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startingHealth: 100
-  slider: {fileID: 0}
-  fillImage: {fileID: 0}
-  fullHealthColor: {r: 0, g: 1, b: 0, a: 1}
-  zeroHealthColor: {r: 1, g: 0, b: 0, a: 1}
-  explosionPrefab: {fileID: 151086, guid: ee49a9a8678ecf8468eb488e1ac8d42b, type: 3}
 --- !u!1 &7971465092224581239
 GameObject:
   m_ObjectHideFlags: 0
@@ -528,7 +529,7 @@ GameObject:
   - component: {fileID: 7971465092225000343}
   - component: {fileID: 7971465092221576133}
   - component: {fileID: 7971465092222574853}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TankChassis
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -609,7 +610,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7971465092225000345}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TankRenderers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -645,7 +646,7 @@ GameObject:
   - component: {fileID: 7971465092225000349}
   - component: {fileID: 7971465092221576135}
   - component: {fileID: 7971465092222574855}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TankTurret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -727,6 +728,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Left DustTrail
       objectReference: {fileID: 0}
+    - target: {fileID: 148586, guid: f7167ad2844254441b40b8a300b4f1fe, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 496482, guid: f7167ad2844254441b40b8a300b4f1fe, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -793,6 +798,10 @@ PrefabInstance:
     - target: {fileID: 148586, guid: f7167ad2844254441b40b8a300b4f1fe, type: 3}
       propertyPath: m_Name
       value: 'Right DustTrail '
+      objectReference: {fileID: 0}
+    - target: {fileID: 148586, guid: f7167ad2844254441b40b8a300b4f1fe, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 496482, guid: f7167ad2844254441b40b8a300b4f1fe, type: 3}
       propertyPath: m_RootOrder

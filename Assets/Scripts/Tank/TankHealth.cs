@@ -19,7 +19,6 @@ public class TankHealth : MonoBehaviour
 
     private TankView tankView;
 
-
     private void Start()
     {
         setHealthUI();
@@ -55,9 +54,11 @@ public class TankHealth : MonoBehaviour
 
     private void setHealthUI()
     {
-        slider = Slider.FindObjectOfType<Slider>();
+        //slider = Slider.FindObjectOfType<Slider>();
+        slider = GameObject.FindGameObjectWithTag("HealthSlider").GetComponent<Slider>();
         slider.value = currentHealth;
-        fillImage = Image.FindObjectOfType<Image>();
+        //fillImage = Image.FindObjectOfType<Image>();
+        fillImage = GameObject.FindGameObjectWithTag("FillAreaFill").GetComponent<Image>();
         fillImage.color = Color.Lerp(a: zeroHealthColor, b: fullHealthColor, t: currentHealth / startingHealth);
     }
 

@@ -12,6 +12,11 @@ TagManager:
   - EnemyHealthSlider
   - EnemyFillAreaFill
   - EnemyMoveSpot
+  - PlayerFireTransform
+  - FixedJoybutton
+  - PlayerAimSlider
+  - Shell
+  - EnemyFireTransform
   layers:
   - Default
   - TransparentFX
@@ -19,7 +24,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Players
   - 
   - 
   - 

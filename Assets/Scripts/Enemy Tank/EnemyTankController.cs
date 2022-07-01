@@ -5,55 +5,58 @@ public class EnemyTankController
     private EnemyTankModel enemyTankModel;
     private EnemyTankView enemyTankView;
     private Rigidbody enemyRB;
-
-
+    public float speed;
+    public TankController tankController;
+    public TankView tankView;
     public delegate void EnemyKilled();
     public static event EnemyKilled onEnemyKilled;
 
-    private float waitTime;
-    
+    // Enemy Patrol 
+    private EnemyTankState currentState;
+    public Vector3 enemySpawnPoint;
 
-
-    public EnemyTankController(EnemyTankModel _enemyTankModel, EnemyTankView _enemyTankView)
+    public EnemyTankController(EnemyTankModel _enemyTankModel, EnemyTankView _enemyTankView, Vector3 enemySpawnPoint)
     {
         enemyTankModel = _enemyTankModel;
         enemyTankView = GameObject.Instantiate<EnemyTankView>(_enemyTankView);
-        enemyRB = enemyTankView.GetEnemyRigidbody();
 
+        enemyRB = enemyTankView.GetEnemyRigidbody();
+        speed = enemyTankModel.enemyMovementSpeed;
         enemyTankModel.SetEnemyTankController(this);
         enemyTankView.SetEnemyTankController(this);
+
+        currentState = new Idle(this);
+        GetAgent().speed = enemyTankModel.GetSpeed() / 2;
+        //enemySpawnPoint = tankController.playerSpawnPoint;
+        enemyTankView.transform.position = enemySpawnPoint;
+    }
+
+    public NavMeshAgent GetAgent() => enemyTankView.GetComponent<NavMeshAgent>();
+    public void RunEnemyAI() => currentState = currentState.Process();
+
+    public Vector3 GetPosition() => enemyTankView.transform.position;
+    public Transform GetFirePoint()
+    {
+        return enemyTankView.firePoint;
     }
 
     void Start()
     {
         setRigidbodyState(true);
         setColliderState(false);
-
-        waitTime = enemyTankView.startWaitTime;
-        enemyTankView.moveSpot.position = new Vector3(Random.Range(enemyTankView.minX, enemyTankView.maxX), 0, Random.Range(enemyTankView.minZ, enemyTankView.maxZ));
+    
+    }
+  
+    public void Move(float enemyMovement, float enemyMovementSpeed)
+    {
+        enemyRB.velocity = enemyTankView.transform.forward * enemyMovement * speed;
     }
 
-    void Update()
+    public void Rotate(float enemyRotate, float enemyRotateSpeed)
     {
-        EnemyPatrol();
-    }
-
-    public void EnemyPatrol()
-    {
-        enemyTankView.transform.position = Vector2.MoveTowards(enemyTankView.transform.position, enemyTankView.moveSpot.position, enemyTankModel.enemyMovementSpeed);
-
-        if(Vector2.Distance(enemyTankView.transform.position, enemyTankView.moveSpot.position) < 0.2f)
-        {
-            if(waitTime <= 0)
-            {
-                enemyTankView.moveSpot.position = new Vector3(Random.Range(enemyTankView.minX, enemyTankView.maxX), 0, Random.Range(enemyTankView.minZ, enemyTankView.maxZ));
-                waitTime = enemyTankView.startWaitTime;
-            }
-            else
-            {
-                waitTime -= Time.deltaTime;
-            }
-        }
+        Vector3 vector = new Vector3(0f, enemyRotate * enemyTankModel.enemyRotationSpeed, 0f);
+        Quaternion deltaRotation = Quaternion.Euler(vector * Time.deltaTime);
+        enemyRB.MoveRotation(enemyRB.rotation * deltaRotation);
     }
 
     public void die()
@@ -73,6 +76,11 @@ public class EnemyTankController
 
     }
 
+    public virtual void FireShell(float velocityMultiplier)
+    {
+        Mathf.Clamp(velocityMultiplier, 0.5f, 1f);
+        ShellService.Instance.ShellFired(enemyTankView.firePoint, velocityMultiplier, enemyTankModel.GetDamage());
+    }
 
     void setRigidbodyState(bool state)
     {
@@ -97,8 +105,6 @@ public class EnemyTankController
 
         enemyTankView.GetComponent<Collider>().enabled = !state;
     }
-
-
 
     public EnemyTankModel GetEnemyTankModel()
     {

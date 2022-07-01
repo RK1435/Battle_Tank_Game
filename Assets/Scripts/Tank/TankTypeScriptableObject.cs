@@ -8,7 +8,7 @@ public class TankTypeScriptableObject : ScriptableObject
 {
     [Header("Properties")]
     public TankType tankType;
-    public float health;
+    public float maxHealth;
 
     [Header("Movement & Rotation")]
     public float _movementSpeed;
