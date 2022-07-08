@@ -1,49 +1,34 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class Chase : EnemyTankState
+using UnityEngine.AI;
+public class Chase : EnemyTankBaseState
 {
-    public Chase(EnemyTankController enemyTank) : base(enemyTank)
+    public override void EnterState(EnemyTankState enemyTankState)
     {
-        name = STATE.CHASE;
+        
     }
 
-    public override void Enter()
+    public override void UpdateState(EnemyTankState enemyTankState)
     {
-        base.Enter();
+        enemyTankState.agent.SetDestination(enemyTankState.player.position);
+        CheckEnemyAttack(enemyTankState);
+        CheckEnemyPatrol(enemyTankState);
     }
 
-    public override void Update()
+    private void CheckEnemyAttack(EnemyTankState enemyTankState)
     {
-        if(playerTank == null)
+        if(enemyTankState.distToPlayer <= enemyTankState.attackRange)
         {
-            MoveToIdleState();
-            return;
-        }
-        enemyTank.GetAgent().SetDestination(playerTank.transform.position);
-
-        float distance = Vector3.Distance(enemyTank.GetPosition(), playerTank.transform.position);
-
-        if(distance > 20)
-        {
-            MoveToIdleState();
-        }
-        else if(distance < 10)
-        {
-            nextState = new Attack(enemyTank);
-            stage = EVENT.EXIT;
+            enemyTankState.SwitchState(enemyTankState.attackState);
         }
     }
 
-    private void MoveToIdleState()
+    private void CheckEnemyPatrol(EnemyTankState enemyTankState)
     {
-        nextState = new Idle(enemyTank);
-        stage = EVENT.EXIT;
-    }
-
-    public override void Exit()
-    {
-        base.Exit();
+        if(enemyTankState.distToPlayer > enemyTankState.chaseRange)
+        {
+            enemyTankState.SwitchState(enemyTankState.patrollingState);
+        }
     }
 }

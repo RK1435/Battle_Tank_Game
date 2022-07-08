@@ -17,7 +17,7 @@ public class TankView : MonoBehaviour, IDamagable
     public Rigidbody rb;
 
     //Joystick
-    private Joystick tvJoystick;
+    public Joystick tvJoystick;
 
     //Audio
     public AudioClip engineIdling;
@@ -241,5 +241,5 @@ public class TankView : MonoBehaviour, IDamagable
         tankHealth = _tankHealth;
     }
 
-
+    public void GetPlayerMovement() => Movement();
 }

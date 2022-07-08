@@ -13,26 +13,40 @@ public class EnemyTankController
 
     // Enemy Patrol 
     private EnemyTankState currentState;
-    public Vector3 enemySpawnPoint;
+    public EnemyTankSpawner enemyTankSpawner;
 
-    public EnemyTankController(EnemyTankModel _enemyTankModel, EnemyTankView _enemyTankView, Vector3 enemySpawnPoint)
+    //Enemy Shooting
+    public int playerNumber = 1;
+    
+    public Transform fireTransform;
+    
+    public AudioSource shootingAudio;
+    public AudioClip chargingClip;
+    public AudioClip fireClip;
+    public float minLaunchForce = 15f;
+    public float maxLaunchForce = 30f;
+    public float maxChargeTime = 0.75f;
+    public float currentLaunchForce;
+    public float chargeSpeed;
+    public bool fire;
+
+    public EnemyTankController(EnemyTankView _enemyTankView, EnemyTankModel _enemyTankModel, Vector3 enemyTankSpawnPoint)
     {
         enemyTankModel = _enemyTankModel;
         enemyTankView = GameObject.Instantiate<EnemyTankView>(_enemyTankView);
 
         enemyRB = enemyTankView.GetEnemyRigidbody();
         speed = enemyTankModel.enemyMovementSpeed;
+
         enemyTankModel.SetEnemyTankController(this);
         enemyTankView.SetEnemyTankController(this);
 
-        currentState = new Idle(this);
-        GetAgent().speed = enemyTankModel.GetSpeed() / 2;
-        //enemySpawnPoint = tankController.playerSpawnPoint;
-        enemyTankView.transform.position = enemySpawnPoint;
+       
+       // enemyTankSpawnPoint = enemyTankSpawner.EnemyRandomPos();
     }
 
     public NavMeshAgent GetAgent() => enemyTankView.GetComponent<NavMeshAgent>();
-    public void RunEnemyAI() => currentState = currentState.Process();
+   
 
     public Vector3 GetPosition() => enemyTankView.transform.position;
     public Transform GetFirePoint()
@@ -76,10 +90,19 @@ public class EnemyTankController
 
     }
 
-    public virtual void FireShell(float velocityMultiplier)
+    public virtual void FireShell()
     {
-        Mathf.Clamp(velocityMultiplier, 0.5f, 1f);
-        ShellService.Instance.ShellFired(enemyTankView.firePoint, velocityMultiplier, enemyTankModel.GetDamage());
+        //Mathf.Clamp(velocityMultiplier, 0.5f, 1f);
+        //ShellService.Instance.ShellFired(enemyTankView.firePoint, velocityMultiplier, enemyTankModel.GetDamage());
+        fire = true;
+
+        GameObject shellInstance = GameObject.Instantiate(enemyTankView.shell, enemyTankView.firePoint.position, enemyTankView.firePoint.rotation);
+        shellInstance.GetComponent<Rigidbody>().velocity = currentLaunchForce * enemyTankView.firePoint.forward;
+
+        shootingAudio.clip = fireClip;
+        shootingAudio.Play();
+
+        currentLaunchForce = minLaunchForce;
     }
 
     void setRigidbodyState(bool state)
@@ -111,5 +134,5 @@ public class EnemyTankController
         return enemyTankModel;
     }
 
-
+    public GameObject GetGameObject() => enemyTankView.gameObject;
 }

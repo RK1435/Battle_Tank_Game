@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 511181847}
   - component: {fileID: 511181848}
   - component: {fileID: 7121645914935935692}
+  - component: {fileID: 8402130134463851716}
   m_Layer: 6
   m_Name: Shell
   m_TagString: Shell
@@ -206,6 +207,19 @@ MonoBehaviour:
   playerTankMask:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &8402130134463851716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2014938374618044513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 329dcad1432f2ab40b4d286f9c601c62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shellPrefab: {fileID: 7121645914935935692}
 --- !u!1001 &2014938375388584859
 PrefabInstance:
   m_ObjectHideFlags: 0

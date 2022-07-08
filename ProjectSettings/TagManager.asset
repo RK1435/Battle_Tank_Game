@@ -17,6 +17,7 @@ TagManager:
   - PlayerAimSlider
   - Shell
   - EnemyFireTransform
+  - WayPoint
   layers:
   - Default
   - TransparentFX

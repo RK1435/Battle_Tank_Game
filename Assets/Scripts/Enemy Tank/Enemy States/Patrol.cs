@@ -1,64 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class Patrol : EnemyTankState
+using UnityEngine.AI;
+public class Patrol : EnemyTankBaseState
 {
-    private Vector3 patrolPoint1;
-    private Vector3 patrolPoint2;
-    private Vector3 currentPoint;
-    public Patrol(EnemyTankController enemyTank) : base(enemyTank)
+    public override void EnterState(EnemyTankState enemyTankState)
     {
-        name = STATE.PATROL;
+        EnemyPatrol(enemyTankState);
     }
 
-    public override void Enter()
+    public override void UpdateState(EnemyTankState enemyTankState)
     {
-        patrolPoint1 = enemyTank.enemySpawnPoint + enemyTank.GetAgent().transform.forward * 5;
-        patrolPoint2 = enemyTank.enemySpawnPoint - enemyTank.GetAgent().transform.forward * 5;
-        currentPoint = patrolPoint1;
-        base.Enter();
-    }
-
-    public override void Update()
-    {
-        if(playerTank != null)
+        if(enemyTankState.agent.remainingDistance <= enemyTankState.agent.stoppingDistance)
         {
-            if(IsPlayerInChaseRange())
-            {
-                MoveToChaseState();
-                return;
-            }
+            enemyTankState.agent.SetDestination(enemyTankState.wayPoints[UnityEngine.Random.Range(0, enemyTankState.wayPoints.Count)].position);
         }
 
-        Patrolling();
+        if(enemyTankState.distToPlayer < enemyTankState.chaseRange)
+        {
+            enemyTankState.SwitchState(enemyTankState.chaseState);
+        }
     }
 
-    private void MoveToChaseState()
+    void EnemyPatrol(EnemyTankState enemyTankState)
     {
-        nextState = new Chase(enemyTank);
-        stage = EVENT.EXIT;
-    }
+        GameObject[] wayPointsObject = GameObject.FindGameObjectsWithTag("WayPoint");
+        Transform[] wayPointsObjectTransform = new Transform[wayPointsObject.Length];
+        for(int i = 0; i < wayPointsObject.Length; i++)
+        {
+            wayPointsObjectTransform[i] = wayPointsObject[i].transform;
+        }
 
-    private bool IsPlayerInChaseRange()
-    {
-        float distance = Vector3.Distance(enemyTank.GetPosition(), playerTank.transform.position);
-        if(distance < 15)
-            return true;
-        return false;
-    }
-
-    private void Patrolling()
-    {
-        enemyTank.GetAgent().SetDestination(currentPoint);
-        if(Vector3.Distance(enemyTank.GetPosition(), patrolPoint1) < 0.5)
-            currentPoint = patrolPoint2;
-        if (Vector3.Distance(enemyTank.GetPosition(), patrolPoint2) < 0.5)
-            currentPoint = patrolPoint1;
-    }
-
-    public override void Exit()
-    {
-        base.Exit();
+        foreach(Transform wPOT in wayPointsObjectTransform)
+        {
+            enemyTankState.wayPoints.Add(wPOT);
+            enemyTankState.agent.SetDestination(enemyTankState.wayPoints[UnityEngine.Random.Range(0, enemyTankState.wayPoints.Count)].position);
+        }
     }
 }

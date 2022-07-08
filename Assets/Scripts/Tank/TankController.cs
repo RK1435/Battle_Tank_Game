@@ -8,12 +8,12 @@ public class TankController
     private Rigidbody rb;
     internal readonly Vector3 playerSpawnPoint;
 
-    public TankController(TankModel _tankModel, TankView _tankView, Vector3 playerSpawnPoint)
+    public TankController(TankView _tankView, TankModel _tankModel, Vector3 playerSpawnPoint)
     {
         tankModel = _tankModel;
         tankView = GameObject.Instantiate<TankView>(_tankView);
         rb = tankView.GetRigidbody();
-        tankView.transform.position = playerSpawnPoint;
+        playerSpawnPoint = tankView.gameObject.transform.position;
         tankModel.SetTankController(this);
         tankView.SetTankController(this);
     }
@@ -66,5 +66,5 @@ public class TankController
         return tankModel;
     }
 
-
+    public GameObject GetGameObject() => tankView.gameObject;
 }

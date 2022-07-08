@@ -1,55 +1,56 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class EnemyTankState
+using UnityEngine.AI;
+public class EnemyTankState : MonoBehaviour
 {
-    public enum STATE
+    public EnemyTankBaseState currentState;
+    public Patrol patrollingState = new Patrol();
+    public Chase chaseState = new Chase();
+    public Attack attackState = new Attack();
+
+    internal EnemyTankView enemyTankView;
+
+    public NavMeshAgent agent;
+    public List<Transform> wayPoints = new List<Transform> ();
+    internal Transform player;
+
+    public float distToPlayer;
+    public float chaseRange;
+    public float attackRange;
+
+    public float timeBtwAttack = 2f;
+    public bool isAlreadyAttacked = false;
+
+    private void Start()
     {
-        IDLE,
-        PATROL,
-        CHASE,
-        ATTACK
+        enemyTankView = GetComponent<EnemyTankView>();
+        player = FindObjectOfType<TankView>().transform;
+
+        currentState = patrollingState;
+        currentState.EnterState(this);
     }
 
-    public enum EVENT
+    private void Update()
     {
-        ENTER,
-        UPDATE,
-        EXIT
+        CheckPlayer();
+        currentState.UpdateState(this);
     }
 
-    protected STATE name;
-    protected EVENT stage;
-
-    protected EnemyTankState nextState;
-    protected EnemyTankController enemyTank;
-    protected Transform playerTank;
-
-    public TankView tankView;
-    public EnemyTankState(EnemyTankController enemyTank)
+    private void CheckPlayer()
     {
-        this.enemyTank = enemyTank;
-        stage = EVENT.ENTER;
-        if(tankView != null)
+        if(player == null)
         {
-            playerTank = tankView.transform;
+            currentState = patrollingState;
+            return;
         }
+
+        distToPlayer = Vector3.Distance(gameObject.transform.position, player.transform.position);
     }
 
-    public virtual void Enter() { stage = EVENT.UPDATE; }
-    public virtual void Update() { stage = EVENT.UPDATE; }
-    public virtual void Exit() { stage = EVENT.EXIT; }
-
-    public EnemyTankState Process()
+    public void SwitchState(EnemyTankBaseState enemyTankBaseState)
     {
-        if(stage == EVENT.ENTER) Enter();
-        if(stage == EVENT.UPDATE) Update();
-        if(stage == EVENT.EXIT)
-        {
-            Exit();
-            return nextState;
-        }
-        return this;
+        currentState = enemyTankBaseState;
+        enemyTankBaseState.EnterState(this);
     }
 }

@@ -18,11 +18,12 @@ public class TankSpawner : MonoBehaviour
         CreateTank();
     }
 
-    private void CreateTank()
+    public GameObject CreateTank()
     {      
         TankTypeScriptableObject tankTypeScriptableObject = tankList.TankList[1];
         TankModel tankModel = new TankModel(tankTypeScriptableObject);
-        TankController tankController = new TankController(tankModel, tankView, playerSpawnPoint);
+        TankController tankController = new TankController(tankView, tankModel,  playerSpawnPoint);
+        return tankController.GetGameObject();
     }
 
     public void SetTankController(TankController _tankController)

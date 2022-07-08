@@ -40,8 +40,7 @@ public class EnemyTankView : MonoBehaviour, IDamagable
 
     [Header("Firing")]
     public Transform firePoint;
-    
-    // Start is called before the first frame update
+    public GameObject shell;
     void Start()
     {
         
@@ -59,16 +58,12 @@ public class EnemyTankView : MonoBehaviour, IDamagable
         enemyHealthFill.transform.SetParent(enemyHealthSlider.transform);
         enemyHealthFill.transform.position = enemyHealthSlider.transform.position;
 
-        GameObject enemyFireTransform = GameObject.FindGameObjectWithTag("EnemyFireTransform");
-        enemyFireTransform.transform.SetParent(transform);
-        //enemyFireTransform.transform.position = firePoint.transform.position;
-        //firePoint = enemyFireTransform.transform;
-
-        //EnemyTankController enemyTankController = GetComponent<EnemyTankController>();
-
-
+        //GameObject enemyFireTransform = GameObject.FindGameObjectWithTag("EnemyFireTransform");
+        //enemyFireTransform.transform.SetParent(transform);
+       
         // Enemy Health
         setHealthUI();
+
     }
 
     private void Awake()
@@ -83,21 +78,10 @@ public class EnemyTankView : MonoBehaviour, IDamagable
         currentHealth = startingHealth;
         isPlayerDead = false;
 
-        //setHealthUI();
         enemyTankHealth = currentHealth;
 
-        firePoint = GameObject.FindGameObjectWithTag("EnemyFireTransform").transform;
-        //firePoint.transform.position = GameObject.FindGameObjectWithTag("EnemyFireTransform").transform.position; ;
     }
-    // Update is called once per frame
-    void Update()
-    {
-        //EnemyMovement();
-        //EnemyPatrol();
-        enemyTankController.RunEnemyAI();
-    }
-
-
+   
     public void TakeDamage(float amount)
     {
         currentHealth -= amount;
@@ -112,13 +96,10 @@ public class EnemyTankView : MonoBehaviour, IDamagable
 
     private void setHealthUI()
     {
-        //slider = Slider.FindObjectOfType<Slider>();
         slider = GameObject.FindGameObjectWithTag("EnemyHealthSlider").GetComponent<Slider>();
         slider.value = currentHealth;
-        //fillImage = Image.FindObjectOfType<Image>();
         fillImage = GameObject.FindGameObjectWithTag("EnemyFillAreaFill").GetComponent<Image>();
         fillImage.color = Color.Lerp(a: zeroHealthColor, b: fullHealthColor, t: currentHealth / startingHealth);
-
     }
 
     private void onDeath()
@@ -134,6 +115,10 @@ public class EnemyTankView : MonoBehaviour, IDamagable
         gameObject.SetActive(false);
     }
 
+    public void FireFunction()
+    {
+        enemyTankController.FireShell();
+    }
     public EnemyTankView(TankTypeScriptableObject tankTypeScriptableObject)
     {
         type = tankTypeScriptableObject.tankType;
